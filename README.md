@@ -1,7 +1,7 @@
 # Inference snaps UI
 
-How to server:
+Run the example server with:
 ```bash
-go run .
+go run ./cmd/example-server
 ``` 
 
