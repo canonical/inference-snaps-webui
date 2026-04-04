@@ -5,3 +5,4 @@ Run the example server with:
 go run ./cmd/example-server
 ``` 
 
+Set `-h` flag for more options.

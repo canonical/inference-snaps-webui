@@ -1,7 +1,11 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"os"
+	"strings"
 
 	ui "github.com/canonical/inference-snaps-ui"
 )
@@ -9,14 +13,28 @@ import (
 const staticDir = "static"
 
 func main() {
+	openAIBaseURL := flag.String("openai-base-url", "http://localhost:8328/v1", "OpenAI-compatible base URL")
+	capabilitiesFlag := flag.String("capabilities", strings.Join(ui.SupportedUICapabilities(), ","), "Comma-separated UI capabilities")
+	instanceName := flag.String("instance-name", "example", "Instance name shown in the UI")
+	engineName := flag.String("engine-name", "intel-cpu", "Engine name shown in the UI")
+	serverPort := flag.Int("port", 8080, "Port to serve the UI on")
+
+	flag.Parse()
+
+	capabilities := strings.Split(*capabilitiesFlag, ",")
+
 	config := ui.Config{
-		OpenAIBaseURL: "http://localhost:8328/v1",
-		Capabilities:  ui.SupportedUICapabilities(),
-		InstanceName:  "example",
-		EngineName:    "intel-cpu",
+		OpenAIBaseURL: *openAIBaseURL,
+		Capabilities:  capabilities,
+		InstanceName:  *instanceName,
+		EngineName:    *engineName,
 	}
 
-	if err := ui.Serve(config, staticDir, 8080, "localhost"); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	b, _ := json.MarshalIndent(config, "", "  ")
+	fmt.Printf("Starting server with config:\n%s\n", b)
+
+	if err := ui.Serve(config, staticDir, *serverPort, "localhost"); err != nil {
+		fmt.Printf("Failed to start server: %v", err)
+		os.Exit(1)
 	}
 }
