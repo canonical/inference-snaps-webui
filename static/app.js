@@ -1,12 +1,9 @@
 const { createApp, nextTick } = Vue;
 
-// Fetch configuration from the Go server's /config endpoint.
-fetch('/config')
-  .then(r => r.json())
-  .then(CONFIG => createApp({
+createApp({
   data() {
     return {
-      config: CONFIG,
+      config: {},
       model: null,            // fetched from /models on startup
       modelError: null,       // error message if /models fetch fails
       messages: [],           // { role, content, rawContent, reasoning, images[], isStreaming, cancelled, friendlyError, errorDetail, reasoningOpen }
@@ -20,7 +17,11 @@ fetch('/config')
     };
   },
 
-  mounted() {
+  async mounted() {
+    // Fetch configurations from the server
+    const r = await fetch('/config');
+    this.config = await r.json();
+    
     document.title = this.uiTitle;
     window.addEventListener('keydown', this.handleGlobalKeydown);
     this.fetchModel();
@@ -366,4 +367,4 @@ fetch('/config')
       msg.reasoningOpen = !msg.reasoningOpen;
     },
   },
-}).mount('#app'));
+}).mount('#app');
