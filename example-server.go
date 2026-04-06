@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	ui "github.com/canonical/inference-snaps-ui"
+	"github.com/canonical/inference-snaps-ui/pkg/ui"
 )
 
 func main() {
