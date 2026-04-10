@@ -15,4 +15,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Silence Sass deprecation warnings from vanilla-framework's legacy @import usage
+        silenceDeprecations: ['import', 'global-builtin', 'if-function', 'color-functions'],
+      },
+    },
+  },
 })
