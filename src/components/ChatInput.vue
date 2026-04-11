@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useImageResize } from '@/composables/useImageResize'
 
@@ -14,6 +14,21 @@ const { resizeImage } = useImageResize()
 const userInput = ref('')
 const attachedImage = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+const textarea = ref<HTMLTextAreaElement | null>(null)
+
+watch(
+  () => store.isLoading,
+  async (loading) => {
+    if (!loading) {
+      await nextTick()
+      textarea.value?.focus()
+    }
+  },
+)
+
+onMounted(() => {
+  textarea.value?.focus()
+})
 
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -77,10 +92,12 @@ function removeImage() {
       <div class="chat-input-row">
         <div class="chat-input-field">
           <textarea
+            ref="textarea"
             v-model="userInput"
             placeholder="Type a message…"
             class="p-form__control chat-textarea"
-            :disabled="store.isLoading"
+            :class="{ 'chat-textarea--loading': store.isLoading }"
+            :readonly="store.isLoading"
             rows="3"
             aria-label="Message input"
             @keydown="handleKeydown"
@@ -192,7 +209,8 @@ function removeImage() {
   box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
 }
 
-.chat-textarea:disabled {
+.chat-textarea:disabled,
+.chat-textarea--loading {
   background-color: #f5f5f5;
   color: #999;
   cursor: not-allowed;
