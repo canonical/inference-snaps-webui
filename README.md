@@ -1,6 +1,13 @@
-# inference-snaps-ui
+# Inference Snaps UI
 
-This template should help get you started developing with Vue 3 in Vite.
+This project is based on a template of Vue 3 in Vite.
+
+## Project specific configuration
+
+The web UI loads configuration from the `/config` endpoint.
+The production web server should host the configuration at this path.
+For development a static file is included in `public/config`.
+In the development server this file will be served at `/config`, and can therefore be used to test different configurations.
 
 ## Recommended IDE Setup
 
