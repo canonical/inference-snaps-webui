@@ -12,9 +12,9 @@ const store = useChatStore()
     <div class="row">
       <div class="col-12">
         <div class="settings-content">
-          <h4 class="u-no-margin--bottom">Settings</h4>
+          <h4 class="u-no-margin--bottom">Configuration</h4>
 
-          <table class="p-table--mobile-card settings-table" aria-label="Settings">
+          <table class="p-table--mobile-card settings-table" aria-label="Configuration">
             <thead>
               <tr>
                 <th>Key</th>
