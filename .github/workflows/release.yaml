@@ -36,8 +36,13 @@ jobs:
       - name: Update package.json version
         run: |
           VERSION="${{ github.event.release.tag_name }}"
-          npm version "$VERSION" --no-git-tag-version
-          echo "Updated package.json to version $VERSION"
+          node -e "
+            const fs = require('fs');
+            const pkg = require('./package.json');
+            pkg.version = '${VERSION}';
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          echo "Updated package.json to version: ${VERSION}"
 
       - name: Install dependencies
         run: npm ci
