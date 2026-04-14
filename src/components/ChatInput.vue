@@ -70,27 +70,27 @@ function removeImage() {
 <template>
   <div class="chat-input-area">
     <div class="u-fixed-width">
-      <!-- Image preview -->
-      <div v-if="attachedImage" class="chat-input-image-preview">
-        <img
-          :src="attachedImage"
-          alt="Image to attach"
-          class="chat-input-image-thumb"
-          title="Click to view full size"
-          @click="store.openLightbox(attachedImage!)"
-        />
-        <button
-          class="p-button--negative is-small u-no-margin--bottom"
-          aria-label="Remove attached image"
-          @click="removeImage"
-        >
-          &#x2715; Remove
-        </button>
-      </div>
 
       <!-- Input row -->
       <div class="chat-input-row">
         <div class="chat-input-field">
+          <!-- Image preview -->
+          <div v-if="attachedImage" class="chat-input-image-preview">
+            <img
+              :src="attachedImage"
+              alt="Image to attach"
+              class="chat-input-image-thumb"
+              title="Click to view full size"
+              @click="store.openLightbox(attachedImage!)"
+            />
+            <button
+              class="p-button--negative is-small u-no-margin--bottom"
+              aria-label="Remove attached image"
+              @click="removeImage"
+            >
+              &#x2715; Remove
+            </button>
+          </div>
           <textarea
             ref="textarea"
             v-model="userInput"
@@ -98,7 +98,6 @@ function removeImage() {
             class="p-form__control chat-textarea"
             :class="{ 'chat-textarea--loading': store.isLoading }"
             :readonly="store.isLoading"
-            rows="3"
             aria-label="Message input"
             @keydown="handleKeydown"
           ></textarea>
@@ -106,7 +105,7 @@ function removeImage() {
         <div class="chat-input-actions">
           <label
             v-if="store.supportsVision && !store.isLoading"
-            class="p-button--neutral u-no-margin--bottom attach-button"
+            class="p-button u-no-margin--bottom"
             title="Attach an image"
             role="button"
             tabindex="0"
@@ -122,6 +121,17 @@ function removeImage() {
               @change="handleImageUpload"
             />
             &#128392; Attach
+          </label>
+          <label v-if="store.showThinkingToggle" class="p-switch thinking-switch">
+            <input
+              v-model="store.thinkingEnabled"
+              type="checkbox"
+              class="p-switch__input"
+              role="switch"
+              :disabled="store.isLoading"
+            />
+            <span class="p-switch__slider"></span>
+            <span class="p-switch__label">{{ store.thinkingEnabled ? 'Thinking on' : 'Thinking off' }}</span>
           </label>
           <button
             v-if="!store.isLoading"
@@ -181,19 +191,21 @@ function removeImage() {
 .chat-input-row {
   display: flex;
   gap: 0.5rem;
-  align-items: flex-end;
+  align-items: stretch;
 }
 
 .chat-input-field {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-textarea {
+  flex: 1;
   width: 100%;
-  resize: vertical;
+  resize: none;
   margin-bottom: 0;
   min-height: 2.5rem;
-  max-height: 10rem;
   font-family: inherit;
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
@@ -219,8 +231,28 @@ function removeImage() {
 .chat-input-actions {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: 0.4rem;
-  flex-shrink: 0;
+  flex: 0 0 8.5rem;
+  width: 8.5rem;
+  overflow: visible;
+  padding-left: 0.25rem;
+}
+
+.chat-input-actions > * {
+  width: 100%;
+}
+
+.thinking-switch {
+  margin-bottom: 0;
+}
+
+.thinking-switch .p-switch__label {
+  display: inline-block;
+  width: auto;
+  overflow: visible;
+  white-space: nowrap;
+  text-overflow: unset;
 }
 
 .chat-input-hint {
@@ -228,19 +260,30 @@ function removeImage() {
   color: #767676;
 }
 
-.attach-button {
-  opacity: 0.6;
-  transition: opacity 0.15s;
-  cursor: pointer;
-}
-
-.attach-button:hover {
-  opacity: 1;
-}
-
 @media (max-width: 600px) {
+  .chat-input-row {
+    flex-wrap: wrap;
+  }
+
+  .chat-input-field {
+    flex: 1 1 100%;
+  }
+
   .chat-input-actions {
+    flex: 1 1 100%;
     flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .chat-input-actions > * {
+    width: auto;
+    flex: 1;
+  }
+
+  .thinking-switch {
+    flex: 0 0 auto;
+    width: 8rem;
   }
 }
 </style>
