@@ -104,7 +104,8 @@ function removeImage() {
         </div>
         <div class="chat-input-actions">
           <button
-            v-if="store.supportsVision && !store.isLoading"
+            v-if="store.supportsVision"
+            :disabled="store.isLoading"
             class="p-button--base has-icon u-no-margin--bottom"
             title="Attach an image"
             type="button"
