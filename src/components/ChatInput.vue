@@ -83,11 +83,12 @@ function removeImage() {
               @click="store.openLightbox(attachedImage!)"
             />
             <button
-              class="p-button--negative is-small u-no-margin--bottom"
+              class="p-button--negative is-small has-icon u-no-margin--bottom"
               aria-label="Remove attached image"
               @click="removeImage"
             >
-              &#x2715; Remove
+              <i class="p-icon--delete is-light"></i>
+              <span>Remove</span>
             </button>
           </div>
           <textarea
