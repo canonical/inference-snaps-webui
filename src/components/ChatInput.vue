@@ -70,7 +70,6 @@ function removeImage() {
 <template>
   <div class="chat-input-area">
     <div class="u-fixed-width">
-
       <!-- Input row -->
       <div class="chat-input-row">
         <div class="chat-input-field">
@@ -103,14 +102,12 @@ function removeImage() {
           ></textarea>
         </div>
         <div class="chat-input-actions">
-          <label
+          <button
             v-if="store.supportsVision && !store.isLoading"
-            class="p-button u-no-margin--bottom"
+            class="p-button--base has-icon u-no-margin--bottom"
             title="Attach an image"
-            role="button"
-            tabindex="0"
-            @keydown.enter.prevent="fileInput?.click()"
-            @keydown.space.prevent="fileInput?.click()"
+            type="button"
+            @click="fileInput?.click()"
           >
             <input
               ref="fileInput"
@@ -118,10 +115,12 @@ function removeImage() {
               accept="image/*"
               style="display: none"
               aria-hidden="true"
+              tabindex="-1"
               @change="handleImageUpload"
             />
-            &#128392; Attach
-          </label>
+            <i class="p-icon--upload"></i>
+            <span>Attach</span>
+          </button>
           <label v-if="store.showThinkingToggle" class="p-switch thinking-switch">
             <input
               v-model="store.thinkingEnabled"
@@ -131,7 +130,9 @@ function removeImage() {
               :disabled="store.isLoading"
             />
             <span class="p-switch__slider"></span>
-            <span class="p-switch__label">{{ store.thinkingEnabled ? 'Thinking on' : 'Thinking off' }}</span>
+            <span class="p-switch__label">{{
+              store.thinkingEnabled ? 'Thinking on' : 'Thinking off'
+            }}</span>
           </label>
           <button
             v-if="!store.isLoading"
@@ -158,7 +159,6 @@ function removeImage() {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .chat-input-area {
@@ -287,4 +287,3 @@ function removeImage() {
   }
 }
 </style>
-

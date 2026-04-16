@@ -1,6 +1,8 @@
 // Import Vanilla Framework from npm and emit all CSS
 @use 'vanilla-framework' as *;
 @include vanilla;
+// Include any vanilla framework icons from the additional set
+@include vf-p-icon-upload;
 
 /* Global reset and layout for the chat app */
 
