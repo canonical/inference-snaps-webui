@@ -23,7 +23,7 @@ const store = useChatStore()
             <button
               class="p-navigation__link p-button--base has-icon"
               :aria-expanded="store.isSettingsPanelOpen"
-              :aria-label="store.isSettingsPanelOpen ? 'Hide configuration' : 'Show configuration'"
+              :aria-label="store.isSettingsPanelOpen ? 'Hide settings' : 'Show settings'"
               @click="store.isSettingsPanelOpen = !store.isSettingsPanelOpen"
             >
               <i class="p-icon--information"></i>
@@ -41,7 +41,7 @@ const store = useChatStore()
             <button
               class="p-navigation__link p-button--base has-icon"
               :aria-expanded="store.isSettingsPanelOpen"
-              :aria-label="store.isSettingsPanelOpen ? 'Hide configuration' : 'Show configuration'"
+              :aria-label="store.isSettingsPanelOpen ? 'Hide settings' : 'Show settings'"
               @click="store.isSettingsPanelOpen = !store.isSettingsPanelOpen"
             >
               <i class="p-icon--information"></i>

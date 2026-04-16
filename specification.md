@@ -70,8 +70,7 @@ The additional field looks like this:
 "chat_template_kwargs": {"enable_thinking": false}
 ```
 
-To be clear, let me give you examples using curl.
-When the toggle is on, the request should look similar to this:
+For example, when the toggle is on, the request should look similar to this:
 ```
 curl http://localhost:8000/v1/chat/completions \
     -H "Content-Type: application/json" \
