@@ -27,7 +27,7 @@ const store = useChatStore()
               title="Settings"
               @click="store.isSettingsPanelOpen = !store.isSettingsPanelOpen"
             >
-              <i class="p-icon--information"></i>
+              <i class="p-icon--settings"></i>
             </button>
           </li>
         </ul>
@@ -38,7 +38,12 @@ const store = useChatStore()
         </ul>
         <ul class="p-navigation__items">
           <!-- Right aligned menu items -->
-          <li :class="['p-navigation__item--dropdown-toggle', { 'is-active': store.isSettingsPanelOpen }]">
+          <li
+            :class="[
+              'p-navigation__item--dropdown-toggle',
+              { 'is-active': store.isSettingsPanelOpen },
+            ]"
+          >
             <button
               class="p-navigation__link p-button--base"
               :aria-expanded="store.isSettingsPanelOpen"
