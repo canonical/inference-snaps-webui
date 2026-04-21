@@ -75,25 +75,28 @@ function removeImage() {
         <div class="chat-input-field">
           <!-- Image preview -->
           <div v-if="attachedImage" class="chat-input-image-preview">
-            <img
-              :src="attachedImage"
-              alt="Image to attach"
-              class="chat-input-image-thumb"
-              title="Click to view full size"
-              @click="store.openLightbox(attachedImage!)"
-            />
-            <button
-              class="p-button--negative is-small has-icon u-no-margin--bottom"
-              aria-label="Remove attached image"
-              @click="removeImage"
-            >
-              <i class="p-icon--delete is-light"></i>
-              <span>Remove</span>
-            </button>
+            <div class="chat-input-image-thumb-wrapper">
+              <img
+                :src="attachedImage"
+                alt="Image to attach"
+                class="chat-input-image-thumb"
+                title="Click to view full size"
+                @click="store.openLightbox(attachedImage!)"
+              />
+              <button
+                class="p-button--negative is-small has-icon chat-input-image-remove"
+                aria-label="Remove attached image"
+                type="button"
+                @click="removeImage"
+              >
+                <i class="p-icon--close is-light"></i>
+              </button>
+            </div>
           </div>
           <textarea
             ref="textarea"
             v-model="userInput"
+            rows="3"
             placeholder="Type a message…"
             class="p-form__control chat-textarea"
             :class="{ 'chat-textarea--loading': store.isLoading }"
@@ -102,7 +105,10 @@ function removeImage() {
             @keydown="handleKeydown"
           ></textarea>
         </div>
-        <div class="chat-input-actions">
+      </div>
+      <!-- Actions row -->
+      <div class="chat-input-actions">
+        <div class="chat-input-actions-left">
           <button
             v-if="store.supportsVision"
             :disabled="store.isLoading"
@@ -120,10 +126,13 @@ function removeImage() {
               tabindex="-1"
               @change="handleImageUpload"
             />
-            <i class="p-icon--upload"></i>
+<!--            <i class="p-icon&#45;&#45;upload"></i>-->
             <span>Attach</span>
           </button>
-          <label v-if="store.showThinkingToggle" class="p-switch u-no-margin--bottom thinking-switch">
+          <label
+            v-if="store.showThinkingToggle"
+            class="p-switch u-no-margin--bottom thinking-switch"
+          >
             <input
               v-model="store.thinkingEnabled"
               type="checkbox"
@@ -136,28 +145,31 @@ function removeImage() {
               store.thinkingEnabled ? 'Thinking on' : 'Thinking off'
             }}</span>
           </label>
+        </div>
+        <div class="chat-input-actions-right">
+          <p class="chat-input-hint u-text--muted">
+            <small>Enter to send &nbsp;&bull;&nbsp; Shift+Enter for new line</small>
+          </p>
           <button
             v-if="!store.isLoading"
             :disabled="!userInput.trim() && !attachedImage"
-            class="p-button--positive u-no-margin--bottom"
+            class="p-button--positive has-icon u-no-margin--bottom"
             @click="handleSend"
           >
-            Send
+<!--            <i class="p-icon&#45;&#45;play is-light"></i>-->
+            <span>Send</span>
           </button>
           <button
             v-else
-            class="p-button--negative u-no-margin--bottom"
+            class="p-button--negative has-icon u-no-margin--bottom"
             aria-label="Cancel generation"
             @click="emit('cancel')"
           >
-            Cancel
+<!--            <i class="p-icon&#45;&#45;stop is-light"></i>-->
+            <span>Cancel</span>
           </button>
         </div>
       </div>
-
-      <p class="chat-input-hint u-text--muted">
-        <small>Enter to send &nbsp;&bull;&nbsp; Shift+Enter for new line</small>
-      </p>
     </div>
   </div>
 </template>
@@ -182,12 +194,26 @@ function removeImage() {
   border: 1px solid #d9d9d9;
 }
 
+.chat-input-image-thumb-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
 .chat-input-image-thumb {
   max-height: 60px;
   max-width: 120px;
   object-fit: contain;
   border-radius: 0.2rem;
   cursor: zoom-in;
+  display: block;
+}
+
+.chat-input-image-remove {
+  position: absolute;
+  top: 0rem;
+  right: 0rem;
+  transform: scale(0.7);
+  transform-origin: top right;
 }
 
 .chat-input-row {
@@ -203,11 +229,9 @@ function removeImage() {
 }
 
 .chat-textarea {
-  flex: 1;
   width: 100%;
-  resize: none;
+  resize: vertical;
   margin-bottom: 0;
-  min-height: 2.5rem;
   font-family: inherit;
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
@@ -232,17 +256,34 @@ function removeImage() {
 
 .chat-input-actions {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.4rem;
-  flex: 0 0 8.5rem;
-  width: 8.5rem;
-  overflow: visible;
-  padding-left: 0.25rem;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.chat-input-actions > * {
-  width: 100%;
+.chat-input-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.chat-input-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.thinking-switch {
+  align-self: center;
+  margin-bottom: 0 !important;
+  margin-top: 0;
+  padding-top: 0 !important;
 }
 
 .thinking-switch .p-switch__label {
@@ -254,8 +295,10 @@ function removeImage() {
 }
 
 .chat-input-hint {
-  margin: 0.25rem 0 0;
+  margin: 0;
+  padding-top: 0 !important;
   color: #767676;
+  white-space: nowrap;
 }
 
 @media (max-width: 600px) {
@@ -268,22 +311,15 @@ function removeImage() {
   }
 
   .chat-input-actions {
-    flex: 1 1 100%;
-    flex-direction: row;
-    width: 100%;
     justify-content: flex-end;
-  }
-
-  .chat-input-actions > * {
-    width: auto;
-    flex: 1;
-    margin-right: 0;
   }
 
   .thinking-switch {
     flex: 0 0 auto;
-    width: 8rem;
-    padding-top: 0;
+  }
+
+  .chat-input-hint {
+    display: none;
   }
 }
 </style>
