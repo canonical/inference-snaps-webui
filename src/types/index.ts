@@ -35,5 +35,6 @@ export interface AppConfig {
   capabilities: string[]
   instanceName: string
   engineName: string
+  chatFormat?: 'markdown' | 'plaintext'
 }
 
