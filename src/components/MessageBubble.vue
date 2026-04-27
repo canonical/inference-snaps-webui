@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import { useChatStore } from '@/stores/chat'
 import type { ChatMessage, MessageContentPart } from '@/types'
 
@@ -13,15 +15,26 @@ const emit = defineEmits<{
 
 const store = useChatStore()
 
-function formatText(text: string | null | undefined): string {
+function formatPlain(text: string | null | undefined): string {
   if (!text) return ''
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-    .replace(/\n/g, '<br>')
+  return DOMPurify.sanitize(
+    String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/\n/g, '<br>'),
+  )
+}
+
+function formatMarkdown(text: string | null | undefined): string {
+  if (!text) return ''
+  return DOMPurify.sanitize(marked.parse(String(text)) as string)
+}
+
+function formatText(text: string | null | undefined): string {
+  return store.isMarkdown ? formatMarkdown(text) : formatPlain(text)
 }
 
 function getUserText(): string {
@@ -44,7 +57,11 @@ function toggleReasoning() {
   <div v-if="message.role === 'user'" class="chat-message chat-message--user">
     <div class="chat-message__avatar" aria-label="You">You</div>
     <div class="chat-message__bubble">
-      <div class="chat-message__text" v-html="formatText(getUserText())"></div>
+      <div
+        class="chat-message__text"
+        :class="{ 'chat-message__text--markdown': store.isMarkdown }"
+        v-html="formatText(getUserText())"
+      ></div>
       <div v-if="message.images && message.images.length" class="chat-message__images">
         <img
           v-for="(img, i) in message.images"
@@ -76,7 +93,7 @@ function toggleReasoning() {
           <span>{{ message.isStreaming ? 'Thinking…' : 'View reasoning' }}</span>
           <span v-if="message.isStreaming" class="reasoning-pulse"></span>
         </button>
-        <div v-show="message.reasoningOpen" class="reasoning-content">
+        <div v-show="message.reasoningOpen" class="reasoning-content" :class="{ 'reasoning-content--markdown': store.isMarkdown }">
           <div v-html="formatText(message.reasoning)"></div>
         </div>
       </div>
@@ -88,7 +105,7 @@ function toggleReasoning() {
       </div>
 
       <!-- Response text -->
-      <div v-else class="chat-message__text">
+      <div v-else class="chat-message__text" :class="{ 'chat-message__text--markdown': store.isMarkdown }">
         <span v-html="formatText(typeof message.content === 'string' ? message.content : '')"></span>
         <span v-if="message.isStreaming && message.content" class="stream-cursor"></span>
       </div>
@@ -181,6 +198,140 @@ function toggleReasoning() {
 
 .chat-message__text {
   white-space: pre-wrap;
+}
+
+.chat-message__text--markdown {
+  white-space: normal;
+}
+
+/* Markdown typography — pierce v-html content via :deep() */
+.chat-message__text--markdown :deep(p) {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.chat-message__text--markdown :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.chat-message__text--markdown :deep(h1),
+.chat-message__text--markdown :deep(h2),
+.chat-message__text--markdown :deep(h3),
+.chat-message__text--markdown :deep(h4),
+.chat-message__text--markdown :deep(h5),
+.chat-message__text--markdown :deep(h6) {
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.chat-message__text--markdown :deep(ul),
+.chat-message__text--markdown :deep(ol) {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.chat-message__text--markdown :deep(li) {
+  margin-bottom: 0.2rem;
+}
+
+.chat-message__text--markdown :deep(code) {
+  font-family: monospace;
+  font-size: 0.875em;
+  padding: 0.1em 0.3em;
+  border-radius: 0.2rem;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.chat-message__text--markdown :deep(pre) {
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 0.4rem;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+}
+
+.chat-message__text--markdown :deep(pre code) {
+  background: none;
+  padding: 0;
+  font-size: 0.85em;
+}
+
+.chat-message__text--markdown :deep(blockquote) {
+  border-left: 3px solid #d9d9d9;
+  margin: 0 0 0.75rem;
+  padding-left: 1rem;
+  color: #666;
+}
+
+.chat-message__text--markdown :deep(a) {
+  color: #06c;
+  text-decoration: underline;
+}
+
+.chat-message__text--markdown :deep(hr) {
+  border: none;
+  border-top: 1px solid #d9d9d9;
+  margin: 0.75rem 0;
+}
+
+.chat-message__text--markdown :deep(table) {
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.chat-message__text--markdown :deep(th),
+.chat-message__text--markdown :deep(td) {
+  border: 1px solid #d9d9d9;
+  padding: 0.3rem 0.6rem;
+  text-align: left;
+}
+
+/* Override code/link colours inside user (blue) bubbles */
+.chat-message--user .chat-message__text--markdown :deep(code) {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.chat-message--user .chat-message__text--markdown :deep(pre) {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.chat-message--user .chat-message__text--markdown :deep(pre code) {
+  color: #fff;
+}
+
+.chat-message--user .chat-message__text--markdown :deep(a) {
+  color: #cce4ff;
+}
+
+.chat-message--user .chat-message__text--markdown :deep(blockquote) {
+  border-left-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Reasoning content markdown overrides */
+.reasoning-content--markdown {
+  white-space: normal;
+}
+
+.reasoning-content--markdown :deep(p) {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.reasoning-content--markdown :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.reasoning-content--markdown :deep(code) {
+  font-family: monospace;
+  font-size: 0.85em;
+  padding: 0.1em 0.25em;
+  border-radius: 0.2rem;
+  background-color: rgba(0, 0, 0, 0.07);
 }
 
 .chat-message__images {
@@ -318,6 +469,10 @@ function toggleReasoning() {
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.reasoning-content--markdown {
+  white-space: normal;
 }
 
 @keyframes fadeInUp {
