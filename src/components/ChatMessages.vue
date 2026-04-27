@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import MessageBubble from './MessageBubble.vue'
 
@@ -10,23 +10,53 @@ const emit = defineEmits<{
   retry: [index: number]
 }>()
 
-function scrollToBottom(force = false) {
+// True when the user has manually scrolled up away from the bottom.
+// Reset when they scroll back to the bottom, or when a new message is sent.
+const userScrolled = ref(false)
+// Flag to suppress the scroll event fired by our own programmatic scrolls.
+let isProgrammaticScroll = false
+
+function onScroll() {
+  if (isProgrammaticScroll) return
   const container = messagesContainer.value
   if (!container) return
   const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
-  if (force || distanceFromBottom < 100) {
-    container.scrollTop = container.scrollHeight
-  }
+  // If user scrolled back near the bottom, re-enable auto-scroll
+  userScrolled.value = distanceFromBottom > 30
 }
 
-// Watch messages length and scroll on new messages
+function scrollToBottom(force = false) {
+  const container = messagesContainer.value
+  if (!container) return
+  if (!force && userScrolled.value) return
+  isProgrammaticScroll = true
+  container.scrollTop = container.scrollHeight
+  // Clear the flag after the scroll event has fired
+  requestAnimationFrame(() => {
+    isProgrammaticScroll = false
+  })
+}
+
+// Watch messages length — force scroll and reset the user-scrolled flag on new messages
 watch(
   () => store.messages.length,
   async () => {
+    userScrolled.value = false
     await nextTick()
-    scrollToBottom()
+    scrollToBottom(true)
   },
 )
+
+// Watch the content of the last streaming message so we scroll on every chunk
+const lastMessageContent = computed(() => {
+  const last = store.messages.at(-1)
+  return last?.isStreaming ? (last.content ?? '') + (last.reasoning ?? '') : null
+})
+
+watch(lastMessageContent, async () => {
+  await nextTick()
+  scrollToBottom()
+})
 
 defineExpose({ scrollToBottom })
 </script>
@@ -38,6 +68,7 @@ defineExpose({ scrollToBottom })
     role="log"
     aria-live="polite"
     aria-label="Conversation history"
+    @scroll="onScroll"
   >
     <div class="u-fixed-width chat-messages__inner">
       <!-- Empty state -->
