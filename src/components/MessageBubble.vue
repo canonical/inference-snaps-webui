@@ -81,7 +81,6 @@ function toggleReasoning() {
   <div v-else class="chat-message chat-message--assistant">
     <div class="chat-message__avatar" aria-label="Assistant">AI</div>
     <div class="chat-message__bubble">
-
       <!-- Reasoning section -->
       <div v-if="message.reasoning" class="reasoning-block">
         <button
@@ -93,7 +92,11 @@ function toggleReasoning() {
           <span>{{ message.isStreaming ? 'Thinking…' : 'View reasoning' }}</span>
           <span v-if="message.isStreaming" class="reasoning-pulse"></span>
         </button>
-        <div v-show="message.reasoningOpen" class="reasoning-content" :class="{ 'reasoning-content--markdown': store.isMarkdown }">
+        <div
+          v-show="message.reasoningOpen"
+          class="reasoning-content"
+          :class="{ 'reasoning-content--markdown': store.isMarkdown }"
+        >
           <div v-html="formatText(message.reasoning)"></div>
         </div>
       </div>
@@ -105,8 +108,14 @@ function toggleReasoning() {
       </div>
 
       <!-- Response text -->
-      <div v-else class="chat-message__text" :class="{ 'chat-message__text--markdown': store.isMarkdown }">
-        <span v-html="formatText(typeof message.content === 'string' ? message.content : '')"></span>
+      <div
+        v-else
+        class="chat-message__text"
+        :class="{ 'chat-message__text--markdown': store.isMarkdown }"
+      >
+        <span
+          v-html="formatText(typeof message.content === 'string' ? message.content : '')"
+        ></span>
         <span v-if="message.isStreaming && message.content" class="stream-cursor"></span>
       </div>
 
@@ -130,15 +139,16 @@ function toggleReasoning() {
       <div v-if="message.cancelled" class="message-cancelled-notice">Cancelled</div>
 
       <!-- Spinner while waiting for first token -->
-      <div v-if="message.isStreaming && !message.content && !message.reasoning" class="chat-spinner">
+      <div
+        v-if="message.isStreaming && !message.content && !message.reasoning"
+        class="chat-spinner"
+      >
         <div class="p-icon--spinner u-animation--spin"></div>
         <span class="u-text--muted">Working…</span>
       </div>
-
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .chat-message {
@@ -210,95 +220,11 @@ function toggleReasoning() {
   margin-bottom: 0.75rem;
 }
 
-.chat-message__text--markdown :deep(p:last-child) {
-  margin-bottom: 0;
-}
-
-.chat-message__text--markdown :deep(h1),
-.chat-message__text--markdown :deep(h2),
-.chat-message__text--markdown :deep(h3),
-.chat-message__text--markdown :deep(h4),
-.chat-message__text--markdown :deep(h5),
-.chat-message__text--markdown :deep(h6) {
-  margin-top: 1rem;
-  margin-bottom: 0.4rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.chat-message__text--markdown :deep(ul),
-.chat-message__text--markdown :deep(ol) {
-  padding-left: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.chat-message__text--markdown :deep(li) {
-  margin-bottom: 0.2rem;
-}
-
-.chat-message__text--markdown :deep(code) {
-  font-family: monospace;
-  font-size: 0.875em;
-  padding: 0.1em 0.3em;
-  border-radius: 0.2rem;
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.chat-message__text--markdown :deep(pre) {
-  background-color: rgba(0, 0, 0, 0.06);
-  border-radius: 0.4rem;
-  padding: 0.75rem 1rem;
-  overflow-x: auto;
-  margin-bottom: 0.75rem;
-}
-
 .chat-message__text--markdown :deep(pre code) {
-  background: none;
-  padding: 0;
-  font-size: 0.85em;
-}
-
-.chat-message__text--markdown :deep(blockquote) {
-  border-left: 3px solid #d9d9d9;
-  margin: 0 0 0.75rem;
-  padding-left: 1rem;
-  color: #666;
-}
-
-.chat-message__text--markdown :deep(a) {
-  color: #06c;
-  text-decoration: underline;
-}
-
-.chat-message__text--markdown :deep(hr) {
-  border: none;
-  border-top: 1px solid #d9d9d9;
-  margin: 0.75rem 0;
-}
-
-.chat-message__text--markdown :deep(table) {
-  border-collapse: collapse;
-  margin-bottom: 0.75rem;
-  width: 100%;
-}
-
-.chat-message__text--markdown :deep(th),
-.chat-message__text--markdown :deep(td) {
-  border: 1px solid #d9d9d9;
-  padding: 0.3rem 0.6rem;
-  text-align: left;
+  background: none !important;
 }
 
 /* Override code/link colours inside user (blue) bubbles */
-.chat-message--user .chat-message__text--markdown :deep(code) {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-.chat-message--user .chat-message__text--markdown :deep(pre) {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
 .chat-message--user .chat-message__text--markdown :deep(pre code) {
   color: #fff;
 }
@@ -309,7 +235,6 @@ function toggleReasoning() {
 
 .chat-message--user .chat-message__text--markdown :deep(blockquote) {
   border-left-color: rgba(255, 255, 255, 0.5);
-  color: rgba(255, 255, 255, 0.8);
 }
 
 /* Reasoning content markdown overrides */
@@ -317,21 +242,8 @@ function toggleReasoning() {
   white-space: normal;
 }
 
-.reasoning-content--markdown :deep(p) {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-}
-
-.reasoning-content--markdown :deep(p:last-child) {
-  margin-bottom: 0;
-}
-
-.reasoning-content--markdown :deep(code) {
-  font-family: monospace;
-  font-size: 0.85em;
-  padding: 0.1em 0.25em;
-  border-radius: 0.2rem;
-  background-color: rgba(0, 0, 0, 0.07);
+.reasoning-content--markdown :deep(pre code) {
+  color: #5a4000;
 }
 
 .chat-message__images {
@@ -348,7 +260,9 @@ function toggleReasoning() {
   border-radius: 0.25rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: zoom-in;
-  transition: opacity 0.15s, transform 0.15s;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
 }
 
 .chat-message__image-preview:hover {
@@ -510,4 +424,3 @@ function toggleReasoning() {
   }
 }
 </style>
-
