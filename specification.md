@@ -95,16 +95,19 @@ curl http://localhost:8000/v1/chat/completions \
 
 ### Chat format
 
-This field indicates the markup used by the respective model.
+The capabilities field can contain a special value `text:markdown`.
+This field indicates that the markup used by the respective model is Markdown.
 
 Always sanitize the input and output to prevent XSS vulnerabilities.
 
-By default, plain text is assumed.
+If this key is not set, assume plain text is used.
 The prompts, reasoning and responses should be rendered directly, and not be interpreted as any markup.
 Therefore, any characters that could be interpreted as HTML should be escaped, and line breaks should be preserved.
 
-If the chat format is set to `markdown`, format the prompts, reasoning and responses following Markdown.
+If the `text:markdown` capability is present, format the prompts, reasoning and responses following Markdown.
 As far as practically possible, use standard Vanilla Framework [typography](https://vanillaframework.io/docs/base/typography) to format the Markdown styles.
+
+Use `markdown-it` as the Markdown parser, and apply syntax highlighting using `highlight.js` for code blocks in the responses.
 
 
 ## UI frameworks

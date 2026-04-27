@@ -40,7 +40,7 @@ export const useChatStore = defineStore('chat', () => {
     config.value.instanceName?.includes('nemotron-3') ?? false,
   )
 
-  const isMarkdown = computed(() => config.value.chatFormat === 'markdown')
+  const isMarkdown = computed(() => config.value.capabilities?.includes('text:markdown') ?? false)
 
   // ── Actions ───────────────────────────────────────────────────────────────
   async function fetchConfig(): Promise<void> {
