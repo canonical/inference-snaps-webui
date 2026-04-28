@@ -49,6 +49,7 @@ The web application should consume static configurations of the following parame
 - capabilities(string array): Model capabilities (text, vision, audio, etc) - only text and vision should be supported for now.
 - instanceName(string): used to construct the UI title, e.g. "gemma3" -> "Gemma3 Inference Snap"
 - engineName(string): for display in the UI
+- chatFormat(string): the markup used by the model, e.g. "markdown" or "plaintext"
 
 These configurations are served by the web server at /config.
 
@@ -91,6 +92,23 @@ curl http://localhost:8000/v1/chat/completions \
         "chat_template_kwargs": {"enable_thinking": false}
     }'
 ```
+
+### Chat format
+
+The capabilities field can contain a special value `text:markdown`.
+This field indicates that the markup used by the respective model is Markdown.
+
+Always sanitize the input and output to prevent XSS vulnerabilities.
+
+If this key is not set, assume plain text is used.
+The prompts, reasoning and responses should be rendered directly, and not be interpreted as any markup.
+Therefore, any characters that could be interpreted as HTML should be escaped, and line breaks should be preserved.
+
+If the `text:markdown` capability is present, format the prompts, reasoning and responses following Markdown.
+As far as practically possible, use standard Vanilla Framework [typography](https://vanillaframework.io/docs/base/typography) to format the Markdown styles.
+
+Use `markdown-it` as the Markdown parser, and apply syntax highlighting using `highlight.js` for code blocks in the responses.
+
 
 ## UI frameworks
 Use Vue.js as the JavaScript framework for building the user interface.

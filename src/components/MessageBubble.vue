@@ -1,6 +1,24 @@
 <script setup lang="ts">
+import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
+import hljs from 'highlight.js/lib/common'
+import 'highlight.js/styles/github.css'
 import { useChatStore } from '@/stores/chat'
 import type { ChatMessage, MessageContentPart } from '@/types'
+
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  highlight(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(code, { language: lang, ignoreIllegals: true }).value
+      } catch {}
+    }
+    return hljs.highlightAuto(code).value
+  },
+})
 
 const props = defineProps<{
   message: ChatMessage
@@ -13,15 +31,26 @@ const emit = defineEmits<{
 
 const store = useChatStore()
 
-function formatText(text: string | null | undefined): string {
+function formatPlain(text: string | null | undefined): string {
   if (!text) return ''
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-    .replace(/\n/g, '<br>')
+  return DOMPurify.sanitize(
+    String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/\n/g, '<br>'),
+  )
+}
+
+function formatMarkdown(text: string | null | undefined): string {
+  if (!text) return ''
+  return DOMPurify.sanitize(md.render(String(text)))
+}
+
+function formatText(text: string | null | undefined): string {
+  return store.isMarkdown ? formatMarkdown(text) : formatPlain(text)
 }
 
 function getUserText(): string {
@@ -44,7 +73,11 @@ function toggleReasoning() {
   <div v-if="message.role === 'user'" class="chat-message chat-message--user">
     <div class="chat-message__avatar" aria-label="You">You</div>
     <div class="chat-message__bubble">
-      <div class="chat-message__text" v-html="formatText(getUserText())"></div>
+      <div
+        class="chat-message__text"
+        :class="{ 'chat-message__text--markdown': store.isMarkdown }"
+        v-html="formatText(getUserText())"
+      ></div>
       <div v-if="message.images && message.images.length" class="chat-message__images">
         <img
           v-for="(img, i) in message.images"
@@ -64,7 +97,6 @@ function toggleReasoning() {
   <div v-else class="chat-message chat-message--assistant">
     <div class="chat-message__avatar" aria-label="Assistant">AI</div>
     <div class="chat-message__bubble">
-
       <!-- Reasoning section -->
       <div v-if="message.reasoning" class="reasoning-block">
         <button
@@ -76,7 +108,11 @@ function toggleReasoning() {
           <span>{{ message.isStreaming ? 'Thinking…' : 'View reasoning' }}</span>
           <span v-if="message.isStreaming" class="reasoning-pulse"></span>
         </button>
-        <div v-show="message.reasoningOpen" class="reasoning-content">
+        <div
+          v-show="message.reasoningOpen"
+          class="reasoning-content"
+          :class="{ 'reasoning-content--markdown': store.isMarkdown }"
+        >
           <div v-html="formatText(message.reasoning)"></div>
         </div>
       </div>
@@ -88,9 +124,14 @@ function toggleReasoning() {
       </div>
 
       <!-- Response text -->
-      <div v-else class="chat-message__text">
-        <span v-html="formatText(typeof message.content === 'string' ? message.content : '')"></span>
-        <span v-if="message.isStreaming && message.content" class="stream-cursor"></span>
+      <div
+        v-else
+        class="chat-message__text"
+        :class="{ 'chat-message__text--markdown': store.isMarkdown }"
+      >
+        <span
+          v-html="formatText(typeof message.content === 'string' ? message.content : '')"
+        ></span>
       </div>
 
       <!-- Retry / details buttons (shown on error) -->
@@ -113,15 +154,16 @@ function toggleReasoning() {
       <div v-if="message.cancelled" class="message-cancelled-notice">Cancelled</div>
 
       <!-- Spinner while waiting for first token -->
-      <div v-if="message.isStreaming && !message.content && !message.reasoning" class="chat-spinner">
+      <div
+        v-if="message.isStreaming && !message.content && !message.reasoning"
+        class="chat-spinner"
+      >
         <div class="p-icon--spinner u-animation--spin"></div>
         <span class="u-text--muted">Working…</span>
       </div>
-
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .chat-message {
@@ -164,6 +206,7 @@ function toggleReasoning() {
   border-radius: 0.5rem;
   line-height: 1.5;
   word-break: break-word;
+  position: relative;
 }
 
 .chat-message--user .chat-message__bubble {
@@ -177,10 +220,49 @@ function toggleReasoning() {
   color: #111;
   border: 1px solid #d9d9d9;
   border-bottom-left-radius: 0.1rem;
+  min-width: 3rem;
+  min-height: 2.5rem;
+  padding-bottom: 1rem;
 }
 
 .chat-message__text {
   white-space: pre-wrap;
+}
+
+.chat-message__text--markdown {
+  white-space: normal;
+}
+
+/* Markdown typography — pierce v-html content via :deep() */
+.chat-message__text--markdown :deep(p) {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.chat-message__text--markdown :deep(pre code) {
+  background: none !important;
+}
+
+/* Override link colours inside user (blue) bubbles */
+.chat-message--user .chat-message__text--markdown :deep(a) {
+  color: #cce4ff;
+  text-decoration: underline;
+}
+
+/* Use same background and default text colour in user message as in AI message */
+.chat-message--user .chat-message__text--markdown :deep(pre),
+.chat-message--user .chat-message__text--markdown :deep(code) {
+  background-color: #f6f8fa;
+  color: #111;
+}
+
+.chat-message--user .chat-message__text--markdown :deep(blockquote) {
+  border-left-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Reasoning content markdown overrides */
+.reasoning-content--markdown {
+  white-space: normal;
 }
 
 .chat-message__images {
@@ -197,7 +279,9 @@ function toggleReasoning() {
   border-radius: 0.25rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: zoom-in;
-  transition: opacity 0.15s, transform 0.15s;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
 }
 
 .chat-message__image-preview:hover {
@@ -237,30 +321,10 @@ function toggleReasoning() {
   font-style: italic;
 }
 
-.stream-cursor {
-  display: inline-block;
-  width: 2px;
-  height: 1em;
-  background-color: currentColor;
-  margin-left: 1px;
-  vertical-align: text-bottom;
-  animation: blink 0.8s step-end infinite;
-}
-
 .chat-spinner {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.p-icon--spinner {
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid #d9d9d9;
-  border-top-color: #e95420;
-  border-radius: 50%;
-  flex-shrink: 0;
 }
 
 /* Reasoning block */
@@ -320,6 +384,10 @@ function toggleReasoning() {
   word-break: break-word;
 }
 
+.reasoning-content--markdown {
+  white-space: normal;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -328,12 +396,6 @@ function toggleReasoning() {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
   }
 }
 
@@ -355,4 +417,3 @@ function toggleReasoning() {
   }
 }
 </style>
-
