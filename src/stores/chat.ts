@@ -79,7 +79,7 @@ export const useChatStore = defineStore('chat', () => {
   // ── Computed ──────────────────────────────────────────────────────────────
   const uiTitle = computed(() => {
     const name = config.value.instanceName ?? ''
-    return name.charAt(0).toUpperCase() + name.slice(1) + ' Inference Snap'
+    return name.charAt(0).toUpperCase() + name.slice(1)
   })
 
   const supportsVision = computed(() =>

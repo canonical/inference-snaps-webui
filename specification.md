@@ -47,7 +47,7 @@ If the model name cannot be retrieved from the /models endpoint of the OpenAI AP
 The web application should consume static configurations of the following parameters:
 - openAIBaseURL(string): OpenAI base URL
 - capabilities(string array): Model capabilities (text, vision, audio, etc) - only text and vision should be supported for now.
-- instanceName(string): used to construct the UI title, e.g. "gemma3" -> "Gemma3 Inference Snap"
+- instanceName(string): used to construct the UI title
 - engineName(string): for display in the UI
 - chatFormat(string): the markup used by the model, e.g. "markdown" or "plaintext"
 
