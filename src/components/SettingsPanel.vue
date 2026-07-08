@@ -45,9 +45,9 @@ const store = useChatStore()
               <tr>
                 <td data-heading="Setting"><strong>Capabilities</strong></td>
                 <td data-heading="Value">
-                  <div v-if="store.config.capabilities?.length" class="capabilities-list">
+                  <div v-if="store.displayedCapabilities.length" class="capabilities-list">
                     <span
-                      v-for="cap in store.config.capabilities"
+                      v-for="cap in store.displayedCapabilities"
                       :key="cap"
                       class="p-status-label p-status-label--positive"
                     >{{ cap }}</span>

@@ -92,7 +92,13 @@ export const useChatStore = defineStore('chat', () => {
     thinkingInstanceNames.some((name) => config.value.instanceName?.includes(name) ?? false),
   )
 
-  const isMarkdown = computed(() => config.value.capabilities?.includes('text:markdown') ?? false)
+  const isMarkdown = computed(() => config.value.capabilities?.includes('text') ?? false)
+
+  const supportedCapabilities = ['text', 'vision']
+
+  const displayedCapabilities = computed(() =>
+    config.value.capabilities?.filter((cap) => supportedCapabilities.includes(cap)) ?? [],
+  )
 
   // ── Actions ───────────────────────────────────────────────────────────────
   async function fetchConfig(): Promise<void> {
@@ -147,6 +153,7 @@ export const useChatStore = defineStore('chat', () => {
     supportsVision,
     showThinkingToggle,
     isMarkdown,
+    displayedCapabilities,
     fetchConfig,
     fetchModelName,
     openLightbox,
