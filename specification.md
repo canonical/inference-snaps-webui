@@ -64,7 +64,7 @@ Do not display the UI name in the settings section as this is already shown in t
 
 ### Reasoning / Thinking
 
-If the instance name, as reported by the /config endpoint, contains the substring "nemotron-3", we need to show a button to toggle thinking/reasoning on or off.
+If the model capabilities include "thinking" we need to show a button to toggle thinking/reasoning on or off.
 This button should be around the same place as the attach and send buttons.
 A new field is added to the request to indicate if the response should contain reasoning or not.
 

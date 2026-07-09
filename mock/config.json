@@ -1,8 +1,9 @@
 {
-  "openAIBaseURL": "http://localhost:8080/v1",
+  "openAIBaseURL": "http://localhost:8352/v1",
   "capabilities": [
     "text:markdown",
-    "vision"
+    "vision",
+    "think"
   ],
   "instanceName": "My Model",
   "engineName": "my-inference-engine"
