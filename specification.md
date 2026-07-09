@@ -46,7 +46,7 @@ If the model name cannot be retrieved from the /models endpoint of the OpenAI AP
 ## Configuration
 The web application should consume static configurations of the following parameters:
 - openAIBaseURL(string): OpenAI base URL
-- capabilities(string array): Model capabilities (text, vision, audio, thinking, etc) - any unsupported capabilities should be ignored and not shown but not cause the application to error out
+- capabilities(string array): Model capabilities (text, vision, audio, thinking, etc)
 - instanceName(string): used to construct the UI title
 - engineName(string): for display in the UI
 - chatFormat(string): the markup used by the model, e.g. "markdown" or "plaintext"
