@@ -23,7 +23,7 @@ jobs:
           echo "Tag '$TAG' is a valid semantic version."
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name }}
 
