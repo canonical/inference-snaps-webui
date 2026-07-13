@@ -46,7 +46,7 @@ If the model name cannot be retrieved from the /models endpoint of the OpenAI AP
 ## Configuration
 The web application should consume static configurations of the following parameters:
 - openAIBaseURL(string): OpenAI base URL
-- capabilities(string array): Model capabilities (text, vision, audio, etc) - only text and vision should be supported for now.
+- capabilities(string array): Model capabilities (text, vision, audio, etc).
 - instanceName(string): used to construct the UI title
 - engineName(string): for display in the UI
 - chatFormat(string): the markup used by the model, e.g. "markdown" or "plaintext"
@@ -64,7 +64,7 @@ Do not display the UI name in the settings section as this is already shown in t
 
 ### Reasoning / Thinking
 
-If the instance name, as reported by the /config endpoint, contains the substring "nemotron-3", we need to show a button to toggle thinking/reasoning on or off.
+If the model capabilities include "thinking", we need to show a button to toggle thinking/reasoning on or off.
 This button should be around the same place as the attach and send buttons.
 A new field is added to the request to indicate if the response should contain reasoning or not.
 
