@@ -86,10 +86,8 @@ export const useChatStore = defineStore('chat', () => {
     config.value.capabilities?.includes('vision') ?? false,
   )
 
-  const thinkingInstanceNames = ['nemotron-3', 'gemma4']
-
-  const showThinkingToggle = computed(() =>
-    thinkingInstanceNames.some((name) => config.value.instanceName?.includes(name) ?? false),
+  const showThinkingToggle = computed(
+    () => config.value.capabilities?.includes('thinking') ?? false,
   )
   // markdown is assumed when text capability is present
   const isMarkdown = computed(() => config.value.capabilities?.includes('text') ?? false)
