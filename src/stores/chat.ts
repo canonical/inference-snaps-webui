@@ -89,8 +89,6 @@ export const useChatStore = defineStore('chat', () => {
   const showThinkingToggle = computed(
     () => config.value.capabilities?.includes('thinking') ?? false,
   )
-  // markdown is assumed when text capability is present
-  const isMarkdown = computed(() => config.value.capabilities?.includes('text') ?? false)
 
   // ── Actions ───────────────────────────────────────────────────────────────
   async function fetchConfig(): Promise<void> {
@@ -144,7 +142,6 @@ export const useChatStore = defineStore('chat', () => {
     uiTitle,
     supportsVision,
     showThinkingToggle,
-    isMarkdown,
     fetchConfig,
     fetchModelName,
     openLightbox,

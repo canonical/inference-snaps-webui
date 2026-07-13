@@ -32,26 +32,9 @@ const emit = defineEmits<{
 
 const store = useChatStore()
 
-function formatPlain(text: string | null | undefined): string {
-  if (!text) return ''
-  return DOMPurify.sanitize(
-    String(text)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-      .replace(/\n/g, '<br>'),
-  )
-}
-
 function formatMarkdown(text: string | null | undefined): string {
   if (!text) return ''
   return DOMPurify.sanitize(md.render(String(text)))
-}
-
-function formatText(text: string | null | undefined): string {
-  return store.isMarkdown ? formatMarkdown(text) : formatPlain(text)
 }
 
 function getUserText(): string {
@@ -114,9 +97,8 @@ watch(
     <div class="chat-message__avatar" aria-label="You">You</div>
     <div class="chat-message__bubble">
       <div
-        class="chat-message__text"
-        :class="{ 'chat-message__text--markdown': store.isMarkdown }"
-        v-html="formatText(getUserText())"
+        class="chat-message__text chat-message__text--markdown"
+        v-html="formatMarkdown(getUserText())"
       ></div>
       <div v-if="message.images && message.images.length" class="chat-message__images">
         <img
@@ -153,11 +135,10 @@ watch(
         <div
           v-show="message.reasoningOpen"
           ref="reasoningContainer"
-          class="reasoning-content"
-          :class="{ 'reasoning-content--markdown': store.isMarkdown }"
+          class="reasoning-content reasoning-content--markdown"
           @scroll="onReasoningScroll"
         >
-          <div v-html="formatText(message.reasoningContent)"></div>
+          <div v-html="formatMarkdown(message.reasoningContent)"></div>
         </div>
       </div>
 
@@ -170,11 +151,10 @@ watch(
       <!-- Response text -->
       <div
         v-else
-        class="chat-message__text"
-        :class="{ 'chat-message__text--markdown': store.isMarkdown }"
+        class="chat-message__text chat-message__text--markdown"
       >
         <span
-          v-html="formatText(typeof message.content === 'string' ? message.content : '')"
+          v-html="formatMarkdown(typeof message.content === 'string' ? message.content : '')"
         ></span>
       </div>
 
