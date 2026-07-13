@@ -90,8 +90,6 @@ export const useChatStore = defineStore('chat', () => {
     () => config.value.capabilities?.includes('thinking') ?? false,
   )
 
-  const isMarkdown = computed(() => config.value.capabilities?.includes('text:markdown') ?? false)
-
   // ── Actions ───────────────────────────────────────────────────────────────
   async function fetchConfig(): Promise<void> {
     const response = await fetch(import.meta.env.VITE_CONFIG_URL)
@@ -144,7 +142,6 @@ export const useChatStore = defineStore('chat', () => {
     uiTitle,
     supportsVision,
     showThinkingToggle,
-    isMarkdown,
     fetchConfig,
     fetchModelName,
     openLightbox,

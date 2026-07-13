@@ -46,7 +46,7 @@ If the model name cannot be retrieved from the /models endpoint of the OpenAI AP
 ## Configuration
 The web application should consume static configurations of the following parameters:
 - openAIBaseURL(string): OpenAI base URL
-- capabilities(string array): Model capabilities (text, vision, audio, etc).
+- capabilities(string array): Model capabilities (text, vision, audio, thinking, etc)
 - instanceName(string): used to construct the UI title
 - engineName(string): for display in the UI
 - chatFormat(string): the markup used by the model, e.g. "markdown" or "plaintext"
@@ -97,16 +97,11 @@ curl http://localhost:8000/v1/chat/completions \
 
 ### Chat format
 
-The capabilities field can contain a special value `text:markdown`.
-This field indicates that the markup used by the respective model is Markdown.
+Always assume the markup used by the model is Markdown.
+Format the prompts, reasoning and responses following Markdown.
 
 Always sanitize the input and output to prevent XSS vulnerabilities.
 
-If this key is not set, assume plain text is used.
-The prompts, reasoning and responses should be rendered directly, and not be interpreted as any markup.
-Therefore, any characters that could be interpreted as HTML should be escaped, and line breaks should be preserved.
-
-If the `text:markdown` capability is present, format the prompts, reasoning and responses following Markdown.
 As far as practically possible, use standard Vanilla Framework [typography](https://vanillaframework.io/docs/base/typography) to format the Markdown styles.
 
 Use `markdown-it` as the Markdown parser, and apply syntax highlighting using `highlight.js` for code blocks in the responses.
