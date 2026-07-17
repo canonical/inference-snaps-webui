@@ -19,7 +19,7 @@
     "dompurify": "^3.4.1",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.1",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.0",
     "vanilla-framework": "^4.48.0",
     "vue": "^3.5.31",
     "vue-router": "^5.0.4"
