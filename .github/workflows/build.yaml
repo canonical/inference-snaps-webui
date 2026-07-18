@@ -2,6 +2,9 @@ name: Build project
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -13,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
