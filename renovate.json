@@ -6,14 +6,8 @@
   "platformAutomerge": true,
   "packageRules": [
     {
-      "description": "Automerge non-major updates for devDependencies",
-      "matchDepTypes": ["devDependencies"],
+      "description": "Automerge minor and patch updates for all dependencies",
       "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge patch updates for all dependencies",
-      "matchUpdateTypes": ["patch"],
       "automerge": true
     }
   ]
