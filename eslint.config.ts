@@ -1,3 +1,9 @@
+// Temporarily not wired into `npm run lint`: typescript-eslint (pulled in by
+// @vue/eslint-config-typescript) cannot run against TypeScript 7 yet, because
+// TypeScript 7 no longer ships the classic compiler API it depends on.
+// This config is kept as-is so it can be re-enabled without changes once
+// typescript-eslint ships TypeScript 7 support.
+// See package.json (`lint` script) and https://typescript-eslint.io/users/dependency-versions/
 import { globalIgnores } from 'eslint/config'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
